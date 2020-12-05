@@ -28,6 +28,7 @@ Multiple provider can be configured.
 Currently available:
 
  * [Swiss Post API](https://developer.post.ch/en/address-web-services-rest)
+ * [Google Maps](https://developers.google.com/maps/documentation/geocoding/start)
 
 
 FEATURES
