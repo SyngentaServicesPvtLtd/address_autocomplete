@@ -29,6 +29,7 @@ Currently available:
 
  * [Swiss Post API](https://developer.post.ch/en/address-web-services-rest)
  * [Google Maps](https://developers.google.com/maps/documentation/geocoding/start)
+ * [Mapbox Geocoding](https://docs.mapbox.com/api/search/geocoding/)
 
 
 FEATURES
