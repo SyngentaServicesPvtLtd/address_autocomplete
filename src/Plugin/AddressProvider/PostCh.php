@@ -3,7 +3,7 @@
 namespace Drupal\address_autocomplete\Plugin\AddressProvider;
 
 use Drupal\address_autocomplete\Plugin\AddressProviderBase;
-use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use GuzzleHttp\Exception\RequestException;
 
@@ -78,10 +78,10 @@ class PostCh extends AddressProviderBase {
     $results = [];
 
     foreach ($addresses as $address) {
-      $street_name = Html::escape($address->Streetname);
-      $house_number = Html::escape($address->HouseNumber);
-      $zip_code = Html::escape($address->Zipcode);
-      $town_name = Html::escape($address->TownName);
+      $street_name = Xss::filter($address->Streetname);
+      $house_number = Xss::filter($address->HouseNumber);
+      $zip_code = Xss::filter($address->Zipcode);
+      $town_name = Xss::filter($address->TownName);
 
       $results[] = [
         'street_name' => $street_name . " " . $house_number,
