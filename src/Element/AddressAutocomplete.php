@@ -41,6 +41,11 @@ class AddressAutocomplete extends Address {
     $element["#attached"]["library"][] = 'address_autocomplete/address_autocomplete';
     $element["address_line1"]['#autocomplete_route_name'] = 'address_autocomplete.addresses';
     $element["address_line1"]["#attributes"]['placeholder'] = t('Please start typing your address...');
+    $country_code = !empty($element["#default_value"]["country_code"]) ? $element["#default_value"]["country_code"] : NULL;
+    if (!empty($element["#value"]["country_code"])) {
+      $country_code = $element["#value"]["country_code"];
+    }
+    $element["address_line1"]['#autocomplete_route_parameters'] = ['country' => $country_code];
     return $element;
   }
 

@@ -32,16 +32,60 @@ class MapboxGeocoding extends AddressProviderBase {
     $results = [];
 
     $token = $this->configuration['token'];
-    $url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' . $string . '.json?access_token=' . $token . '&autocomplete=true&types=address&limit=10';
+    $exploded_query = explode('||', $string);
+    $address = $exploded_query[0].'.json?';
+    $query = [
+      'autocomplete' => 'true',
+      'types' => 'address',
+      'limit' => 10,
+      'access_token' => $token,
+      'language' => \Drupal::languageManager()->getCurrentLanguage()->getId(),
+    ];
+    if (!empty($exploded_query[1])) {
+      $query['country'] = $exploded_query[1];
+    }
+    $url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' . $address . http_build_query($query) ;
 
     $response = $this->client->request('GET', $url);
     $content = Json::decode($response->getBody());
 
+    //some country have format Street number street name
+    $country_format_special = ['FR','CA','IE','IN','IL','HK','MY','OM','NZ','PH','SA','SE','SG','LK','TH','UK','US','VN'];
     foreach ($content["features"] as $key => $feature) {
-      $results[$key]['street_name'] = $feature["text"];
-      $results[$key]['street_name'] .= isset($feature["address"]) ? ' ' . $feature["address"] : '';
-      $results[$key]['town_name'] = $feature["context"][1]["text"];
-      $results[$key]['zip_code'] = $feature["context"][0]["text"];
+      $results[$key]['street_name'] = !empty($feature["text_".$query['language']]) ? $feature["text_".$query['language']] : $feature["text"];
+      if(!empty($feature["address"])){
+        if (!empty($query['country']) && in_array($query['country'], $country_format_special)) {
+          $results[$key]['street_name'] = $feature["address"] . ' ' . $results[$key]['street_name'];
+        } else {
+          $results[$key]['street_name'] .= ', ' . $feature["address"];
+        }
+      }
+      if(!empty($feature["context"])){
+        foreach ($feature["context"] as $context) {
+          if (strpos($context['id'], 'region') !== FALSE) {
+            $results[$key]['administrative_area'] = $context['text'];
+            if(!empty($context['short_code'])){
+              $explode_region = explode('-',$context['short_code']);
+              $results[$key]['administrative_area'] = end($explode_region);
+            }
+          }
+          if (strpos($context['id'], 'postcode') !== FALSE) {
+            $results[$key]['zip_code'] = $context["text"];
+          }
+          if (strpos($context['id'], 'locality') !== FALSE) {
+            $results[$key]['town_name'] = $context["text"];
+          }
+          if (strpos($context['id'], 'place') !== FALSE) {
+            $results[$key]['town_name'] = $context["text"];
+          }
+        }
+      }
+      if(!empty( $feature["center"])){
+        $results[$key]['location'] = [
+          'longitude' => $feature["center"][0],
+          'latitude' => $feature["center"][1],
+        ];
+      }
       $results[$key]['label'] = $feature["place_name"];
     }
 
