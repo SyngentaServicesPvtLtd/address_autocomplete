@@ -31,12 +31,17 @@ class GoogleMaps extends AddressProviderBase {
   public function processQuery($string) {
     $results = [];
 
+    $exploded_query = explode('||', $string);
+    $address = $exploded_query[0];
     $url = 'https://maps.googleapis.com/maps/api/geocode/json';
     $query = [
       'key' => $this->configuration['api_key'],
-      'address' => $string,
+      'address' => $address,
       'language' => 'en',
     ];
+    if (!empty($exploded_query[1])) {
+        $query['components'] = 'country:'.$exploded_query[1];
+    }
 
     $response = $this->client->request('GET', $url, [
       'query' => $query,
