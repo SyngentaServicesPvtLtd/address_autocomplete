@@ -11,6 +11,7 @@
           form_wrapper.find('input.address-line1').val(ui.item.street_name);
           form_wrapper.find('input.postal-code').val(ui.item.zip_code);
           form_wrapper.find('input.locality').val(ui.item.town_name);
+          form_wrapper.find('select.administrative-area, input.administrative-area').val(ui.item.administrative_area);
         };
 
       });

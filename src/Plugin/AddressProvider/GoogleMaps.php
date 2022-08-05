@@ -62,8 +62,11 @@ class GoogleMaps extends AddressProviderBase {
           case "route":
             $results[$key]["street_name"] = $component["long_name"];
             break;
-          case "administrative_area_level_1":
+          case "locality":
             $results[$key]["town_name"] = $component["long_name"];
+            break;
+          case "administrative_area_level_1":
+            $results[$key]["administrative_area"] = $component["short_name"];
             break;
           case "postal_code":
             $results[$key]["zip_code"] = $component["long_name"];
