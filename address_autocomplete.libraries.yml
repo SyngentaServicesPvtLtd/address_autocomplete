@@ -1,6 +1,7 @@
 address_autocomplete:
   js:
     js/address_autocomplete.js: {}
+    js/autocomplete_override.js: {}
   dependencies:
     - core/jquery
     - core/jquery.once
