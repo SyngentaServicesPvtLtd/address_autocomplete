@@ -51,6 +51,9 @@ class AddressAutocomplete extends ControllerBase {
    */
   public function handleAutocomplete(Request $request) {
     $input = $request->query->get('q');
+    if (!empty($request->query->get('country'))) {
+      $input .= '||' . $request->query->get('country');
+    }
     $results = $this->getProviderResults($input);
     return new JsonResponse($results);
   }
